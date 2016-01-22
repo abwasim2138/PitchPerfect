@@ -76,6 +76,9 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
         node = pitch
         }else if reverb == true{
         //REVERB 
+            
+//        CITE: http://stackoverflow.com/questions/29619087/what-does-detachnode-do-in-avaudioengine-class-in-swift 
+            //HELPED IN UNDERSTANDING WHAT NODE WAS NEEDED FOR ECHO AND REVERB EFFECTS
         let reverb = AVAudioUnitReverb()
         reverb.loadFactoryPreset(AVAudioUnitReverbPreset.Plate)
         reverb.wetDryMix = 55
