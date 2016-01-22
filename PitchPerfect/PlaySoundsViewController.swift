@@ -13,6 +13,7 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
 
     @IBOutlet weak var stopButton: UIButton!
     @IBOutlet weak var pauseResumeButton: UIButton!
+    @IBOutlet var stopPauseStackView: UIStackView!
     
     private var audioPlayer = AVAudioPlayer()
     private var audioEngine:AVAudioEngine!
@@ -31,14 +32,13 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
         }catch let error as NSError {
             print(error.localizedDescription)
         }
-        self.stopButton.hidden = true
-        self.pauseResumeButton.hidden = true
+        stopPauseStackView.alpha = 0.0
             do {
                 try
-                self.audioPlayer = AVAudioPlayer(contentsOfURL: receivedData!.filePathURL!)
-                self.audioPlayer.delegate = self
-                self.audioPlayer.prepareToPlay()
-                self.audioPlayer.enableRate = true
+                audioPlayer = AVAudioPlayer(contentsOfURL: receivedData!.filePathURL!)
+                audioPlayer.delegate = self
+                audioPlayer.prepareToPlay()
+                audioPlayer.enableRate = true
             }catch {
                 print("ERROR IN PLAYING FILE")
             }
@@ -52,18 +52,16 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
     
     func playAudio (rate: Float) {
         resetAudio()
-        self.audioPlayer.rate = rate
-        self.audioPlayer.play()
-        self.stopButton.hidden = false
-        self.pauseResumeButton.hidden = false
-        self.isPlaying = true
+        audioPlayer.rate = rate
+        audioPlayer.play()
+        stopPauseStackView.alpha = 1.0
+        isPlaying = true
     }
     
     func changePitch(p: Float,reverb: Bool,echo: Bool) {
         resetAudio()
-        stopButton.hidden = false
-        self.pauseResumeButton.hidden = false
-        self.isPlaying = true
+        stopPauseStackView.alpha = 1.0
+        isPlaying = true
         
         audioPlayerNode = AVAudioPlayerNode()
         audioEngine.attachNode(audioPlayerNode)
@@ -108,9 +106,9 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
         audioPlayer.stop()
         audioEngine.stop()
         audioEngine.reset()
-        self.audioPlayer.currentTime = 0.0
+        audioPlayer.currentTime = 0.0
         audioEngineOn = false
-        self.pauseResumeButton.setImage(UIImage(named: "pause"), forState: .Normal)
+        pauseResumeButton.setImage(UIImage(named: "pause"), forState: .Normal)
     }
     
     @IBAction func slowAudio(sender: UIButton) {
@@ -140,26 +138,25 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
     
     @IBAction func stopAudio(sender: UIButton) {
         resetAudio()
-        self.audioPlayer.currentTime = 0.0
-        self.stopButton.hidden = true
-        self.pauseResumeButton.hidden = true
+        audioPlayer.currentTime = 0.0
+        stopPauseStackView.alpha = 0.0
     }
     
     @IBAction func pauseResumeAudio(sender: UIButton) {
         if (isPlaying) {
-            self.pauseResumeButton.setImage(UIImage(named: "resume"), forState: .Normal)
+            pauseResumeButton.setImage(UIImage(named: "resume"), forState: .Normal)
             if (audioEngineOn) {
-            self.audioPlayerNode.pause()
+            audioPlayerNode.pause()
             }else{
-            self.audioPlayer.stop()
+            audioPlayer.stop()
             }
             isPlaying = false
         }else{
-            self.pauseResumeButton.setImage(UIImage(named: "pause"), forState: .Normal)
+            pauseResumeButton.setImage(UIImage(named: "pause"), forState: .Normal)
             if (audioEngineOn){
-            self.audioPlayerNode.play()
+            audioPlayerNode.play()
             }else{
-            self.audioPlayer.play()
+            audioPlayer.play()
             }
             isPlaying = true
         }
@@ -168,8 +165,7 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
     func audioPlayerDidFinishPlaying(player: AVAudioPlayer, successfully flag: Bool) {
         isPlaying = false
         resetAudio()
-        self.stopButton.hidden = true
-        self.pauseResumeButton.hidden = true
+        stopPauseStackView.alpha = 0.0
     }
 
 }
